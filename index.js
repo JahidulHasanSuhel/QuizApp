@@ -29,6 +29,8 @@ const quizData = [
 const questions = [...quizData].sort(()=> Math.random()- 0.5);
 let currentQuestion = 0;
 let score = 0;
+let timer;
+let timeLeft;
 
 const questionEl = document.getElementById("question");
 const optionsEl = document.getElementById("options");
@@ -37,6 +39,11 @@ const timerEl = document.getElementById("timer");
 const resultEl = document.getElementById("result");
 
 function loadQuestion(){
+    clearInterval(timer);
+    timeLeft = 15;
+    updateTimer();
+    timer = setInterval(countdown, 1000);
+
     const q = questions[currentQuestion];
     questionEl.textContent = `Q ${currentQuestion + 1}. ${q.question}`;
     optionsEl.innerHTML = "";
@@ -46,7 +53,7 @@ function loadQuestion(){
         btn.classList.add("option-btn");
         btn.textContent = option;
         btn.addEventListener("click", () => {
-            selectAnswer(index);
+            selectAnswer(index, true);
         })
         optionsEl.appendChild(btn);
 
@@ -56,14 +63,28 @@ function loadQuestion(){
 
 }
 
-function selectAnswer(index){
+function countdown(){
+    timeLeft--;
+    updateTimer()
+    if(timeLeft === 0){
+        clearInterval(timer);
+        selectAnswer(questions[currentQuestion]?.correct, false)
+    }
+}
+
+function updateTimer(){
+    timerEl.textContent = `⏱️${timeLeft}`;
+}
+
+function selectAnswer(index, shouldScore){
+    clearInterval(timer);
     const q = questions[currentQuestion];
     const buttons = document.querySelectorAll('.option-btn');
 
     buttons.forEach(btn => btn.disabled = true);
 
     if (index === q.correct) {
-        score++;
+        shouldScore && score++;
         buttons[index].classList.add("correct");
     } else{
         buttons[index].classList.add("wrong");
@@ -101,6 +122,7 @@ function showResult(){
         <button onclick="location.reload()">Restart Quiz</button>
     `
 }
+
 
 
 loadQuestion()

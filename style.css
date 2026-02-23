@@ -70,3 +70,7 @@ body{
 .option-btn.wrong{
     background-color: #e74c3c;
 }
+button {
+    cursor: pointer;
+    margin-bottom: 5px;
+}
